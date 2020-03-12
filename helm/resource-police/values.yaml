@@ -1,0 +1,12 @@
+name: resource-police
+
+userID: 1000
+groupID: 1000
+
+image:
+  registry: quay.io
+  name: giantswarm/resource-police
+  tag: latest
+
+installations: []
+slackWebhookEndpoint:
