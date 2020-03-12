@@ -52,5 +52,5 @@ spec:
               - key: installations.yaml
                 path: installations.yaml
               secretName: {{ .Values.name }}
-  schedule: "* * * * *"
+  schedule: "0 8,17 * * 1-5"
   successfulJobsHistoryLimit: 3
