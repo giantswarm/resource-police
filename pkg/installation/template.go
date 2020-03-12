@@ -2,7 +2,7 @@ package installation
 
 const ReportTemplate = `*Report about clusters older than 8 hours*
 {{ range $i, $installation := . }}
-Installation: {{ $installation.Name }}
+Installation: *{{ $installation.Name }}*
 {{ if $installation.Clusters -}}
 Clusters:
 {{ range $j, $cluster := $installation.Clusters -}}

@@ -6,9 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
-	"os"
 	"strings"
 	"text/template"
 	"time"
@@ -129,16 +127,19 @@ func ListClusters(i Installation) ([]Cluster, error) {
 }
 
 func RenderReport(installations []Installation) (string, error) {
-	// Create a new template and parse the letter into it.
+	fmt.Println("Rendering report...")
+
 	t := template.Must(template.New("report-template").Parse(ReportTemplate))
 
-	// Execute the template for each recipient.
-	err := t.Execute(os.Stdout, installations)
+	var renderedReport bytes.Buffer
+	err := t.Execute(&renderedReport, installations)
 	if err != nil {
-		log.Println("executing template:", err)
+		return "", microerror.Mask(err)
 	}
 
-	return "", nil
+	fmt.Println("Report has been rendered.")
+
+	return renderedReport.String(), nil
 }
 
 func authorize(endpoint string, credentials Credentials) (string, error) {

@@ -24,6 +24,7 @@ spec:
           containers:
           - args:
             - report
+            - --installations.config.file=/resource-police/installations.yaml
             env:
             - name: SLACK_WEBHOOK_ENDPOINT
               valueFrom:
@@ -44,12 +45,12 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
           volumes:
-          - name: {{ .Values.installations }}
+          - name: {{ .Values.name }}
             secret:
               defaultMode: 420
               items:
               - key: installations.yaml
                 path: installations.yaml
-              secretName: {{ .Values.installations }}
-  schedule: "*/1 * * * *"
+              secretName: {{ .Values.name }}
+  schedule: "* * * * *"
   successfulJobsHistoryLimit: 3

@@ -1,6 +1,11 @@
 package slack
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 )
@@ -34,5 +39,21 @@ func New(config Config) (*Slack, error) {
 }
 
 func (s *Slack) SendReport(report string) error {
+	fmt.Println("Sending report into slack #ops channel...")
+
+	requestBody, err := json.Marshal(map[string]string{
+		"text": report,
+	})
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	_, err = http.Post(s.webhookEndpoint, "application/json", bytes.NewBuffer(requestBody))
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	fmt.Println("Report has been sent.")
+
 	return nil
 }
