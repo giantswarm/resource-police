@@ -24,18 +24,18 @@ spec:
           containers:
           - args:
             - report
-            - --installations.config.file=/resource-police/installations.yaml
+            - --installations.config.file=/resource-police-config/installations.yaml
             env:
             - name: SLACK_WEBHOOK_ENDPOINT
               valueFrom:
                 secretKeyRef:
-                  key: slack-webhook-endpoint
-                  name: slack-webhook-endpoint
+                  key: slackWebhookEndpoint
+                  name: {{ .Values.name }}
             image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
             imagePullPolicy: Always
             name: {{ .Values.name }}
             volumeMounts:
-            - mountPath: /resource-police
+            - mountPath: /resource-police-config
               name: {{ .Values.name }}
               readOnly: true
           dnsPolicy: ClusterFirst

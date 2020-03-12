@@ -1,6 +1,8 @@
 package report
 
 import (
+	"os"
+
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/cobra"
 
@@ -19,7 +21,7 @@ type flag struct {
 
 func (f *flag) Init(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&f.InstallationsConfigFile, flagInstallationsConfigFile, "", "Installations configuration file.")
-	cmd.Flags().StringVar(&f.SlackWebhookEndpoint, flagSlackWebhookEndpoint, "", "Slack Webhook endpoint for posting messages into channel.")
+	cmd.Flags().StringVar(&f.SlackWebhookEndpoint, flagSlackWebhookEndpoint, os.Getenv(env.SlackWebhookEndpoint), "Slack Webhook endpoint for posting messages into channel.")
 }
 
 func (f *flag) Validate() error {
