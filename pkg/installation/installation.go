@@ -2,37 +2,47 @@ package installation
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 	"text/template"
 	"time"
 
 	"github.com/ghodss/yaml"
+	gsclient "github.com/giantswarm/gsclientgen/client"
+	"github.com/giantswarm/gsclientgen/client/auth_tokens"
+	"github.com/giantswarm/gsclientgen/client/clusters"
+	"github.com/giantswarm/gsclientgen/models"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
-	"github.com/giantswarm/resource-police/internal/key"
+	"github.com/go-openapi/runtime"
+	httptransport "github.com/go-openapi/runtime/client"
+	"github.com/go-openapi/strfmt"
+	"github.com/hako/durafmt"
 )
 
 const (
-	AGE_LIMIT   = 8
-	DATE_LAYOUT = "2006-01-02T15:04:05"
+	DatetimeLayout = "2006-01-02T15:04:05Z"
+	DateLayout     = "2006-01-02"
 )
 
-type AuthResponse struct {
-	AuthToken string `json:"auth_token"`
-}
+var AgeLimit = time.Hour * 8
 
 type Cluster struct {
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	CreateDate string `json:"create_date"`
-
-	// internal field
-	Age string
+	ID               string
+	Name             string
+	CreateDate       time.Time
+	Labels           map[string]string
+	Age              time.Duration
+	AgeString        string
+	Creator          string
+	KeepUntil        time.Time
+	IsV5             bool
+	InstallationName string
 }
 
 type Config struct {
@@ -45,6 +55,7 @@ type Config struct {
 type Credentials struct {
 	User     string `json:"user"`
 	Password string `json:"password"`
+	Token    string `json:"token,omitempty"`
 }
 
 type Installation struct {
@@ -52,8 +63,13 @@ type Installation struct {
 	APIEndpoint string      `json:"apiEndpoint"`
 	Credentials Credentials `json:"credentials"`
 
-	// internal field
-	Clusters []Cluster
+	Client *gsclient.Gsclientgen
+
+	Clusters []*Cluster
+}
+
+type TemplateData struct {
+	Clusters []*Cluster
 }
 
 func New(config Config) (installations []Installation, err error) {
@@ -75,97 +91,145 @@ func New(config Config) (installations []Installation, err error) {
 		return nil, microerror.Mask(err)
 	}
 
+	for i, inst := range installations {
+		u, uerr := url.Parse(inst.APIEndpoint)
+		if uerr != nil {
+			return nil, microerror.Maskf(invalidConfigError, "API endpoint URL %s could not be parsed", inst.APIEndpoint)
+		}
+
+		tlsConfig := &tls.Config{}
+		transport := httptransport.New(u.Host, "", []string{u.Scheme})
+		transport.Transport = &http.Transport{
+			Proxy:           http.ProxyFromEnvironment,
+			TLSClientConfig: tlsConfig,
+		}
+		installations[i].Client = gsclient.New(transport, strfmt.Default)
+	}
+
 	return installations, nil
 }
 
-func ListClusters(i Installation) ([]Cluster, error) {
-	authEndpoint := fmt.Sprintf("%s/%s", i.APIEndpoint, key.GSAPIAuthEndpoint)
-	authToken, err := authorize(authEndpoint, i.Credentials)
+func getAuthorization(i Installation) (runtime.ClientAuthInfoWriter, error) {
+	authHeader := "giantswarm " + i.Credentials.Token
+	return httptransport.APIKeyAuth("Authorization", "header", authHeader), nil
+}
+
+func ListClusters(i Installation) ([]*Cluster, error) {
+	authToken, err := authorize(i)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
-	clustersEndpoint := fmt.Sprintf("%s/%s", i.APIEndpoint, key.GSAPIListClustersEndpoint)
-	req, err := http.NewRequest("GET", clustersEndpoint, nil)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
-	req.Header.Set("Authorization", fmt.Sprintf("giantswarm %s", authToken))
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	i.Credentials.Token = authToken
+
+	authWriter, err := getAuthorization(i)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	fmt.Printf("Listing clusters for installation %s\n", i.Name)
+
+	params := clusters.NewGetClustersParams()
+	response, err := i.Client.Clusters.GetClusters(params, authWriter)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
-	var clusters []Cluster
-	err = json.Unmarshal(body, &clusters)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
+	var clustersToDelete []*Cluster
+	for _, cluster := range response.Payload {
+		if cluster.DeleteDate != nil {
+			// We skip clusters that are already in deletion.
+			continue
+		}
 
-	var clustersWithAge []Cluster
-	for _, cluster := range clusters {
-		d := strings.Split(cluster.CreateDate, "Z")
-		createdAt, err := time.Parse(DATE_LAYOUT, d[0])
+		created, err := time.Parse(DatetimeLayout, cluster.CreateDate)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
-		now := time.Now()
-		timeDiff := now.Sub(createdAt)
-		if timeDiff.Hours() > AGE_LIMIT {
-			cluster.Age = fmt.Sprintf("%.0fh", timeDiff.Hours())
-			clustersWithAge = append(clustersWithAge, cluster)
+
+		age := time.Now().Sub(created)
+
+		if age < AgeLimit {
+			// We skip clusters that are younger than 3 hours.
+			continue
 		}
+
+		isV5 := false
+		if strings.Contains(cluster.Path, "/v5/") {
+			isV5 = true
+		}
+
+		c := &Cluster{
+			ID:               cluster.ID,
+			Name:             cluster.Name,
+			CreateDate:       created,
+			IsV5:             isV5,
+			Age:              age,
+			AgeString:        durafmt.ParseShort(age).String(),
+			Labels:           cluster.Labels,
+			InstallationName: i.Name,
+		}
+
+		if val, ok := c.Labels["creator"]; ok {
+			c.Creator = val
+		}
+		if val, ok := c.Labels["keep-until"]; ok {
+			c.KeepUntil, err = time.Parse(DateLayout, val)
+			if err != nil {
+				return nil, microerror.Mask(err)
+			}
+		}
+
+		// If required labels are set, we look at the kee-until value
+		if c.Creator != "" {
+			if c.KeepUntil.Sub(time.Now()) > 0 {
+				continue
+			}
+		}
+
+		clustersToDelete = append(clustersToDelete, c)
 	}
 
-	return clustersWithAge, nil
+	return clustersToDelete, nil
 }
 
-func RenderReport(installations []Installation) (string, error) {
-	fmt.Println("Rendering report...")
+func RenderReport(clusters []*Cluster) (string, error) {
+	fmt.Println("Rendering report")
 
-	t := template.Must(template.New("report-template").Parse(ReportTemplate))
-
-	var renderedReport bytes.Buffer
-	err := t.Execute(&renderedReport, installations)
+	templateCode, err := ioutil.ReadFile("./pkg/installation/report.gotemplate")
 	if err != nil {
 		return "", microerror.Mask(err)
 	}
 
-	fmt.Println("Report has been rendered.")
+	t := template.Must(template.New("report-template").Parse(string(templateCode)))
+
+	myData := TemplateData{
+		Clusters: clusters,
+	}
+
+	var renderedReport bytes.Buffer
+	err = t.Execute(&renderedReport, myData)
+	if err != nil {
+		return "", microerror.Mask(err)
+	}
+
+	fmt.Println("Report has been rendered")
 
 	return renderedReport.String(), nil
 }
 
-func authorize(endpoint string, credentials Credentials) (string, error) {
-	requestBody, err := json.Marshal(map[string]string{
-		"email":           credentials.User,
-		"password_base64": base64.URLEncoding.EncodeToString([]byte(credentials.Password)),
+func authorize(i Installation) (string, error) {
+	fmt.Printf("Authorizing for installation %s\n", i.Name)
+	params := auth_tokens.NewCreateAuthTokenParams().WithBody(&models.V4CreateAuthTokenRequest{
+		Email:          i.Credentials.User,
+		PasswordBase64: base64.StdEncoding.EncodeToString([]byte(i.Credentials.Password)),
 	})
+	response, err := i.Client.AuthTokens.CreateAuthToken(params, nil)
 	if err != nil {
 		return "", microerror.Mask(err)
 	}
 
-	resp, err := http.Post(endpoint, "application/json", bytes.NewBuffer(requestBody))
-	if err != nil {
-		return "", microerror.Mask(err)
-	}
+	fmt.Printf("Successfully authorized for installation %s\n", i.Name)
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", microerror.Mask(err)
-	}
-
-	var authResponse AuthResponse
-	err = json.Unmarshal(body, &authResponse)
-	if err != nil {
-		return "", microerror.Mask(err)
-	}
-
-	return authResponse.AuthToken, nil
+	return response.Payload.AuthToken, nil
 }

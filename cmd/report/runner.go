@@ -3,6 +3,7 @@ package report
 import (
 	"context"
 	"io"
+	"sort"
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -52,7 +53,7 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 		}
 	}
 
-	var collectedInstallations []installation.Installation
+	var clustersToDelete []*installation.Cluster
 	{
 		for _, i := range testInstallations {
 			clusters, err := installation.ListClusters(i)
@@ -60,17 +61,15 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 				return microerror.Mask(err)
 			}
 
-			if len(clusters) > 0 {
-				newInstallation := installation.Installation{
-					Name:     i.Name,
-					Clusters: clusters,
-				}
-				collectedInstallations = append(collectedInstallations, newInstallation)
-			}
+			clustersToDelete = append(clustersToDelete, clusters...)
 		}
 	}
 
-	report, err := installation.RenderReport(collectedInstallations)
+	sort.Slice(clustersToDelete, func(i, j int) bool {
+		return clustersToDelete[i].Age.Milliseconds() > clustersToDelete[j].Age.Milliseconds()
+	})
+
+	report, err := installation.RenderReport(clustersToDelete)
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -88,6 +87,10 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 			return microerror.Mask(err)
 		}
 	}
+
+	// fmt.Println("Report preview:")
+	// fmt.Println(report)
+	// return nil
 
 	err = slackService.SendReport(report)
 	if err != nil {
