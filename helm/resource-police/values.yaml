@@ -6,7 +6,7 @@ groupID: 1000
 image:
   registry: quay.io
   name: giantswarm/resource-police
-  tag: latest
+  tag: [[ .Version ]]
 
 installations: []
 slackWebhookEndpoint:
