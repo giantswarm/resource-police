@@ -1,6 +1,0 @@
-*Test clusters that should be deleted*
-
-{{ range  .Clusters -}}
-- `{{ .InstallationName }}` / `{{ .ID }}` - {{ .Name }} ({{ .AgeString }} old) {{ with .Creator }} - ping @{{ .Creator }}{{ end }}
-{{ end }}
-Please check <https://intranet.giantswarm.io/docs/dev-and-releng/test-environments/|our policy> on how to keep test clusters alive.
