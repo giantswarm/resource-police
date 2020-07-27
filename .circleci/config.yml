@@ -1,33 +1,14 @@
 version: 2.1
 
 orbs:
-  architect: giantswarm/architect@0.7.0
-
-jobs:
-  build:
-    machine: true
-    steps:
-    - checkout
-
-    - run: |
-        wget -q $(curl -sS -H "Authorization: token $RELEASE_TOKEN" https://api.github.com/repos/giantswarm/architect/releases/latest | grep browser_download_url | head -n 1 | cut -d '"' -f 4)
-        chmod +x ./architect
-        ./architect version
-    - run: ./architect build
-    - persist_to_workspace:
-        root: .
-        paths:
-        - ./resource-police
-    - deploy:
-        command: |
-          if [ "${CIRCLE_BRANCH}" == "master" ]; then
-            ./architect deploy
-          fi
+  architect: giantswarm/architect@0.10.0
 
 workflows:
-  package-and-push-chart-on-tag:
+  build:
     jobs:
-      - build:
+      - architect/go-build:
+          name: build
+          binary: resource-police
           filters:
             tags:
               only: /^v.*/
