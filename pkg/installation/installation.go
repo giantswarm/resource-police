@@ -147,7 +147,7 @@ func ListClusters(i Installation) ([]*Cluster, error) {
 			return nil, microerror.Mask(err)
 		}
 
-		age := time.Now().Sub(created)
+		age := time.Since(created)
 
 		if age < AgeLimit {
 			// We skip clusters that are younger than 3 hours.
@@ -182,7 +182,7 @@ func ListClusters(i Installation) ([]*Cluster, error) {
 
 		// If required labels are set, we look at the keep-until value
 		if c.Creator != "" {
-			if c.KeepUntil.Sub(time.Now()) > 0 {
+			if time.Until(c.KeepUntil) > 0 {
 				continue
 			}
 		}
