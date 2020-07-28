@@ -3,7 +3,7 @@ module github.com/giantswarm/resource-police
 go 1.13
 
 require (
-	github.com/giantswarm/gsclientgen/v2 v2.0.6-0.20200728140338-1ad88f8cf832
+	github.com/giantswarm/gsclientgen/v2 v2.0.6
 	github.com/giantswarm/microerror v0.2.1
 	github.com/giantswarm/micrologger v0.3.1
 	github.com/go-openapi/runtime v0.19.20
