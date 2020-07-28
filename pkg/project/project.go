@@ -1,11 +1,11 @@
 package project
 
 var (
-	description = "Command line tool for the OpsGenie rotation scheduling."
+	description = "Command line tool for reporting test clusters that live too long."
 	gitSHA      = "n/a"
 	name        = "resource-police"
 	source      = "https://github.com/giantswarm/resource-police"
-	version     = "n/a"
+	version     = "0.2.1-dev"
 )
 
 func Description() string {
