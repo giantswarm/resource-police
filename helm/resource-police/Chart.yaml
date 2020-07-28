@@ -1,4 +1,5 @@
-appVersion: [[ .Version ]]
+apiVersion: v1
+appVersion: [[ .AppVersion ]]
 description: Report about tenant clusters in test installations
 home: https://github.com/giantswarm/resource-police
 name: resource-police

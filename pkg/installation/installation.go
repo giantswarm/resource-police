@@ -147,7 +147,7 @@ func ListClusters(i Installation) ([]*Cluster, error) {
 			return nil, microerror.Mask(err)
 		}
 
-		age := time.Now().Sub(created)
+		age := time.Since(created)
 
 		if age < AgeLimit {
 			// We skip clusters that are younger than 3 hours.
@@ -180,9 +180,9 @@ func ListClusters(i Installation) ([]*Cluster, error) {
 			}
 		}
 
-		// If required labels are set, we look at the kee-until value
+		// If required labels are set, we look at the keep-until value
 		if c.Creator != "" {
-			if c.KeepUntil.Sub(time.Now()) > 0 {
+			if time.Until(c.KeepUntil) > 0 {
 				continue
 			}
 		}
@@ -196,19 +196,14 @@ func ListClusters(i Installation) ([]*Cluster, error) {
 func RenderReport(clusters []*Cluster) (string, error) {
 	fmt.Println("Rendering report")
 
-	templateCode, err := ioutil.ReadFile("./pkg/installation/report.gotemplate")
-	if err != nil {
-		return "", microerror.Mask(err)
-	}
-
-	t := template.Must(template.New("report-template").Parse(string(templateCode)))
+	t := template.Must(template.New("report-template").Parse(reportTemplate))
 
 	myData := TemplateData{
 		Clusters: clusters,
 	}
 
 	var renderedReport bytes.Buffer
-	err = t.Execute(&renderedReport, myData)
+	err := t.Execute(&renderedReport, myData)
 	if err != nil {
 		return "", microerror.Mask(err)
 	}

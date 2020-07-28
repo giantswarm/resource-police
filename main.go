@@ -43,6 +43,9 @@ func mainE(ctx context.Context) error {
 		}
 
 		rootCommand, err = cmd.New(c)
+		if err != nil {
+			return microerror.Mask(err)
+		}
 	}
 
 	err = rootCommand.Execute()
