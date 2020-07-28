@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2020-07-28
+
 ### Fixed
 
 - Moved report template to go source file so it can be read when running in a container.
 
-[Unreleased]: https://github.com/giantswarm/resource-police/compare/v0.0.0...HEAD
+[Unreleased]: https://github.com/giantswarm/resource-police/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/giantswarm/resource-police/compare/v0.0.0...v0.2.1
