@@ -12,17 +12,17 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/ghodss/yaml"
-	gsclient "github.com/giantswarm/gsclientgen/client"
-	"github.com/giantswarm/gsclientgen/client/auth_tokens"
-	"github.com/giantswarm/gsclientgen/client/clusters"
-	"github.com/giantswarm/gsclientgen/models"
+	gsclient "github.com/giantswarm/gsclientgen/v2/client"
+	"github.com/giantswarm/gsclientgen/v2/client/auth_tokens"
+	"github.com/giantswarm/gsclientgen/v2/client/clusters"
+	"github.com/giantswarm/gsclientgen/v2/models"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/go-openapi/runtime"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/hako/durafmt"
+	"sigs.k8s.io/yaml"
 )
 
 const (
