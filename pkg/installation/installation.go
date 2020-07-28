@@ -12,17 +12,17 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/ghodss/yaml"
-	gsclient "github.com/giantswarm/gsclientgen/client"
-	"github.com/giantswarm/gsclientgen/client/auth_tokens"
-	"github.com/giantswarm/gsclientgen/client/clusters"
-	"github.com/giantswarm/gsclientgen/models"
+	gsclient "github.com/giantswarm/gsclientgen/v2/client"
+	"github.com/giantswarm/gsclientgen/v2/client/auth_tokens"
+	"github.com/giantswarm/gsclientgen/v2/client/clusters"
+	"github.com/giantswarm/gsclientgen/v2/models"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/go-openapi/runtime"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/hako/durafmt"
+	"sigs.k8s.io/yaml"
 )
 
 const (
@@ -109,30 +109,34 @@ func New(config Config) (installations []Installation, err error) {
 	return installations, nil
 }
 
-func getAuthorization(i Installation) (runtime.ClientAuthInfoWriter, error) {
-	authHeader := "giantswarm " + i.Credentials.Token
-	return httptransport.APIKeyAuth("Authorization", "header", authHeader), nil
-}
-
 func ListClusters(i Installation) ([]*Cluster, error) {
-	authToken, err := authorize(i)
-	if err != nil {
-		return nil, microerror.Mask(err)
+	if i.Credentials.Token == "" {
+		var err error
+		i.Credentials.Token, err = authorize(i)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
 	}
 
-	i.Credentials.Token = authToken
-
-	authWriter, err := getAuthorization(i)
-	if err != nil {
-		return nil, microerror.Mask(err)
+	var authWriter runtime.ClientAuthInfoWriter
+	{
+		var err error
+		authWriter, err = getAuthorization(i)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
 	}
 
 	fmt.Printf("Listing clusters for installation %s\n", i.Name)
 
-	params := clusters.NewGetClustersParams()
-	response, err := i.Client.Clusters.GetClusters(params, authWriter)
-	if err != nil {
-		return nil, microerror.Mask(err)
+	var response *clusters.GetClustersOK
+	{
+		var err error
+		params := clusters.NewGetClustersParams()
+		response, err = i.Client.Clusters.GetClusters(params, authWriter)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
 	}
 
 	var clustersToDelete []*Cluster
@@ -227,4 +231,9 @@ func authorize(i Installation) (string, error) {
 	fmt.Printf("Successfully authorized for installation %s\n", i.Name)
 
 	return response.Payload.AuthToken, nil
+}
+
+func getAuthorization(i Installation) (runtime.ClientAuthInfoWriter, error) {
+	authHeader := "giantswarm " + i.Credentials.Token
+	return httptransport.APIKeyAuth("Authorization", "header", authHeader), nil
 }
