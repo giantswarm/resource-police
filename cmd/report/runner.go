@@ -2,6 +2,7 @@ package report
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"sort"
 
@@ -39,6 +40,8 @@ func (r *runner) Run(cmd *cobra.Command, args []string) error {
 func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) error {
 	var err error
 
+	var errors []string
+
 	var testInstallations []installation.Installation
 	{
 		c := installation.Config{
@@ -57,11 +60,12 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 	{
 		for _, i := range testInstallations {
 			clusters, err := installation.ListClusters(i)
-			if err != nil {
-				return microerror.Mask(err)
+			if err == nil {
+				clustersToDelete = append(clustersToDelete, clusters...)
+			} else {
+				// collect errors, but continue
+				errors = append(errors, fmt.Sprintf("Could not list cluster in installation `%s`: `%s`", i.Name, err))
 			}
-
-			clustersToDelete = append(clustersToDelete, clusters...)
 		}
 	}
 
@@ -69,7 +73,7 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 		return clustersToDelete[i].Age.Milliseconds() > clustersToDelete[j].Age.Milliseconds()
 	})
 
-	report, err := installation.RenderReport(clustersToDelete)
+	report, err := installation.RenderReport(clustersToDelete, errors)
 	if err != nil {
 		return microerror.Mask(err)
 	}
