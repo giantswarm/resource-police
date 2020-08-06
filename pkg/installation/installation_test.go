@@ -29,7 +29,7 @@ func Test_RenderReport(t *testing.T) {
 			AgeString:        "2d",
 			InstallationName: "gaia",
 		},
-	})
+	}, []string{"An error occurred"})
 	if err != nil {
 		t.Fatalf("expected err to be nil, got %s", err)
 	}
