@@ -12,6 +12,15 @@ const expectedRenderedReport = `*Test clusters that should be deleted*
 - ` + "`gaia` / `def34`" + ` - other (2d old)
 
 Please check <https://intranet.giantswarm.io/docs/dev-and-releng/test-environments/|our policy> on how to keep test clusters alive.
+
+By the way, some errors occurred:
+
+- An error occurred
+
+Please check the resource-police configuration and installation IP whitelists to ensure
+that all installations are accessible by resource-police.
+
+
 `
 
 func Test_RenderReport(t *testing.T) {
