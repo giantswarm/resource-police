@@ -15,11 +15,11 @@ Please check <https://intranet.giantswarm.io/docs/dev-and-releng/test-environmen
 
 By the way, some errors occurred:
 
-- An error occurred
+- First error
+- Second error
 
 Please check the resource-police configuration and installation IP whitelists to ensure
 that all installations are accessible by resource-police.
-
 
 `
 
@@ -38,7 +38,9 @@ func Test_RenderReport(t *testing.T) {
 			AgeString:        "2d",
 			InstallationName: "gaia",
 		},
-	}, []string{"An error occurred"})
+	}, []string{
+		"First error",
+		"Second error"})
 	if err != nil {
 		t.Fatalf("expected err to be nil, got %s", err)
 	}

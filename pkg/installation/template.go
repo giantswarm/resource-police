@@ -14,9 +14,8 @@ By the way, some errors occurred:
 
 {{ range  .Errors -}}
 - {{ . }}
-
+{{ end }}
 Please check the resource-police configuration and installation IP whitelists to ensure
 that all installations are accessible by resource-police.
-{{ end }}
 {{ end }}
 `
