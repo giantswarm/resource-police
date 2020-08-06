@@ -64,7 +64,7 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 				clustersToDelete = append(clustersToDelete, clusters...)
 			} else {
 				// collect errors, but continue
-				errors = append(errors, fmt.Sprintf("Could not list cluster in installation `%s`: `%s`", i.Name, err))
+				errors = append(errors, fmt.Sprintf("Could not list clusters in installation `%s`: `%s`", i.Name, err))
 			}
 		}
 	}
