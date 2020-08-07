@@ -70,6 +70,7 @@ type Installation struct {
 
 type TemplateData struct {
 	Clusters []*Cluster
+	Errors   []string
 }
 
 func New(config Config) (installations []Installation, err error) {
@@ -197,13 +198,14 @@ func ListClusters(i Installation) ([]*Cluster, error) {
 	return clustersToDelete, nil
 }
 
-func RenderReport(clusters []*Cluster) (string, error) {
+func RenderReport(clusters []*Cluster, errors []string) (string, error) {
 	fmt.Println("Rendering report")
 
 	t := template.Must(template.New("report-template").Parse(reportTemplate))
 
 	myData := TemplateData{
 		Clusters: clusters,
+		Errors:   errors,
 	}
 
 	var renderedReport bytes.Buffer
