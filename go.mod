@@ -6,10 +6,10 @@ require (
 	github.com/giantswarm/gsclientgen/v2 v2.0.6
 	github.com/giantswarm/microerror v0.2.1
 	github.com/giantswarm/micrologger v0.3.1
-	github.com/go-openapi/runtime v0.19.20
+	github.com/go-openapi/runtime v0.19.24
 	github.com/go-openapi/strfmt v0.19.5
 	github.com/google/go-cmp v0.5.4
 	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026
-	github.com/spf13/cobra v1.0.0
+	github.com/spf13/cobra v1.1.1
 	sigs.k8s.io/yaml v1.2.0
 )
