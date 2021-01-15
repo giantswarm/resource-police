@@ -10,6 +10,6 @@ require (
 	github.com/go-openapi/strfmt v0.19.5
 	github.com/google/go-cmp v0.4.0
 	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026
-	github.com/spf13/cobra v1.0.0
+	github.com/spf13/cobra v1.1.1
 	sigs.k8s.io/yaml v1.2.0
 )
