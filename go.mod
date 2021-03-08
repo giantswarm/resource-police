@@ -13,3 +13,5 @@ require (
 	github.com/spf13/cobra v1.1.1
 	sigs.k8s.io/yaml v1.2.0
 )
+
+replace github.com/coreos/etcd v3.3.13+incompatible => github.com/coreos/etcd v3.3.25+incompatible
