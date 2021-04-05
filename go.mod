@@ -7,7 +7,7 @@ require (
 	github.com/giantswarm/microerror v0.3.0
 	github.com/giantswarm/micrologger v0.5.0
 	github.com/go-openapi/runtime v0.19.26
-	github.com/go-openapi/strfmt v0.20.0
+	github.com/go-openapi/strfmt v0.20.1
 	github.com/google/go-cmp v0.5.5
 	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026
 	github.com/spf13/cobra v1.1.3
