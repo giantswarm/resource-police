@@ -2,15 +2,16 @@ package report
 
 import (
 	"context"
-	"fmt"
 	"io"
-	"sort"
+	"time"
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/cobra"
 
-	"github.com/giantswarm/resource-police/pkg/installation"
+	"github.com/giantswarm/resource-police/pkg/cortex"
+	"github.com/giantswarm/resource-police/pkg/intersect"
+	"github.com/giantswarm/resource-police/pkg/report"
 	"github.com/giantswarm/resource-police/pkg/slack"
 )
 
@@ -42,38 +43,35 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 
 	var errors []string
 
-	var testInstallations []installation.Installation
+	var clusters []string
 	{
-		c := installation.Config{
-			Logger: r.logger,
-
-			InstallationsConfigFile: r.flag.InstallationsConfigFile,
-		}
-
-		testInstallations, err = installation.New(c)
+		cortexService, err := cortex.New(cortex.Config{
+			URL:      r.flag.CortexEndpoint,
+			UserName: r.flag.CortexUsername,
+			Password: r.flag.CortexPassword,
+		})
 		if err != nil {
 			return microerror.Mask(err)
 		}
-	}
 
-	var clustersToDelete []*installation.Cluster
-	{
-		for _, i := range testInstallations {
-			clusters, err := installation.ListClusters(i)
-			if err == nil {
-				clustersToDelete = append(clustersToDelete, clusters...)
-			} else {
-				// collect errors, but continue
-				errors = append(errors, fmt.Sprintf("Could not list clusters in installation `%s`: `%s`", i.Name, err))
-			}
+		// Fetch the clusters that exist right now.
+		now := time.Now()
+		clusters, err = cortexService.QueryClusters(now)
+		if err != nil {
+			return microerror.Mask(err)
 		}
+
+		// Fetch the clusters that existed three hours ago.
+		clustersEarlier, err := cortexService.QueryClusters(now.Add(-(time.Hour * 3)))
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		// As a result, report the clusters from 3 hours ago that still exist now.
+		clusters = intersect.StringSliceSorted(clusters, clustersEarlier)
 	}
 
-	sort.Slice(clustersToDelete, func(i, j int) bool {
-		return clustersToDelete[i].Age.Milliseconds() > clustersToDelete[j].Age.Milliseconds()
-	})
-
-	report, err := installation.RenderReport(clustersToDelete, errors)
+	report, err := report.Render(clusters, errors)
 	if err != nil {
 		return microerror.Mask(err)
 	}

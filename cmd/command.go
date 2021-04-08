@@ -14,7 +14,7 @@ import (
 
 const (
 	name        = "resource-police"
-	description = "Test tenant clusters reports"
+	description = "Reports workload clusters that may be due for deletion."
 )
 
 type Config struct {
