@@ -2,24 +2,17 @@
 // adapted especially for string slices.
 package intersect
 
-import (
-	"sort"
-)
-
-// StringSliceSorted returns a slice of strings
+// StringSlice returns a slice of strings
 // occurring both in a and b.
-// a needs to be sorted.
-// Complexity: O(n * log(n))
-func StringSliceSorted(a, b []string) []string {
-	set := make([]string, 0)
+// Complexity: O(n^2)
+func StringSlice(a []string, b []string) []string {
+	set := []string{}
 
 	for i := 0; i < len(a); i++ {
-		el := a[i]
-		idx := sort.Search(len(b), func(i int) bool {
-			return b[i] == el
-		})
-		if idx < len(b) && b[idx] == el {
-			set = append(set, el)
+		for j := 0; j < len(b); j++ {
+			if a[i] == b[j] {
+				set = append(set, a[i])
+			}
 		}
 	}
 
