@@ -68,7 +68,7 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 		}
 
 		// As a result, report the clusters from 3 hours ago that still exist now.
-		clusters = intersect.StringSliceSorted(clusters, clustersEarlier)
+		clusters = intersect.StringSlice(clusters, clustersEarlier)
 	}
 
 	report, err := report.Render(clusters, errors)
