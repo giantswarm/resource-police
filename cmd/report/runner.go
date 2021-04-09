@@ -2,7 +2,6 @@ package report
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"time"
 
@@ -77,10 +76,6 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 	if err != nil {
 		return microerror.Mask(err)
 	}
-
-	fmt.Println("Report preview:")
-	fmt.Println(report)
-	return nil
 
 	var slackService *slack.Slack
 	{
