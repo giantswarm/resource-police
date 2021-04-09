@@ -73,28 +73,36 @@ func (s Service) QueryClusters(t time.Time) ([]string, error) {
 		fmt.Printf("Warnings while querying: %#v\n", warnings)
 	}
 
-	if value != nil {
-		if vector, ok := value.(model.Vector); ok {
+	if value == nil {
+		return clusters, microerror.Mask(fmt.Errorf("query %s returned nil value", query))
+	}
 
-			for i := 0; i < vector.Len(); i++ {
-				installation := ""
-				clusterID := ""
-
-				if val, ok := vector[i].Metric["installation"]; ok {
-					installation = string(val)
-				} else {
-					return clusters, microerror.Mask(errors.New("could not find required label 'installation' in sample"))
-				}
-
-				if val, ok := vector[i].Metric["cluster_id"]; ok {
-					clusterID = string(val)
-				} else {
-					return clusters, microerror.Mask(errors.New("could not find required label 'cluster_id' in sample"))
-				}
-
-				clusters = append(clusters, fmt.Sprintf("%s/%s", installation, clusterID))
-			}
+	vector, ok := value.(model.Vector)
+	if ok {
+		if vector.Len() == 0 {
+			return clusters, microerror.Mask(fmt.Errorf("query %s returned an empty result", query))
 		}
+
+		for i := 0; i < vector.Len(); i++ {
+			installation := ""
+			clusterID := ""
+
+			if val, ok := vector[i].Metric["installation"]; ok {
+				installation = string(val)
+			} else {
+				return clusters, microerror.Mask(errors.New("could not find required label 'installation' in sample"))
+			}
+
+			if val, ok := vector[i].Metric["cluster_id"]; ok {
+				clusterID = string(val)
+			} else {
+				return clusters, microerror.Mask(errors.New("could not find required label 'cluster_id' in sample"))
+			}
+
+			clusters = append(clusters, fmt.Sprintf("%s/%s", installation, clusterID))
+		}
+	} else {
+		return clusters, microerror.Mask(fmt.Errorf("query %s did not return a vector", query))
 	}
 
 	sort.Strings(clusters)

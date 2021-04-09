@@ -2,6 +2,7 @@ package report
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"time"
 
@@ -40,8 +41,7 @@ func (r *runner) Run(cmd *cobra.Command, args []string) error {
 
 func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) error {
 	var err error
-
-	var errors []string
+	var errors []error
 
 	var clusters []string
 	{
@@ -56,25 +56,31 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 
 		// Fetch the clusters that exist right now.
 		now := time.Now()
-		clusters, err = cortexService.QueryClusters(now)
+		clustersNow, err := cortexService.QueryClusters(now)
 		if err != nil {
-			return microerror.Mask(err)
+			errors = append(errors, err)
 		}
 
 		// Fetch the clusters that existed three hours ago.
-		clustersEarlier, err := cortexService.QueryClusters(now.Add(-(time.Hour * 3)))
+		// That's the age threshold we use for reporting a test cluster.
+		threeHoursAgo := now.Add(-(time.Hour * 3))
+		clustersEarlier, err := cortexService.QueryClusters(threeHoursAgo)
 		if err != nil {
-			return microerror.Mask(err)
+			errors = append(errors, err)
 		}
 
-		// As a result, report the clusters from 3 hours ago that still exist now.
-		clusters = intersect.StringSlice(clusters, clustersEarlier)
+		// Create intersection of both queries.
+		clusters = intersect.StringSlice(clustersNow, clustersEarlier)
 	}
 
 	report, err := report.Render(clusters, errors)
 	if err != nil {
 		return microerror.Mask(err)
 	}
+
+	fmt.Println("Report preview:")
+	fmt.Println(report)
+	return nil
 
 	var slackService *slack.Slack
 	{
@@ -89,10 +95,6 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 			return microerror.Mask(err)
 		}
 	}
-
-	// fmt.Println("Report preview:")
-	// fmt.Println(report)
-	// return nil
 
 	err = slackService.SendReport(report)
 	if err != nil {

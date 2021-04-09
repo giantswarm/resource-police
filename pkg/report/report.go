@@ -22,10 +22,10 @@ type Cluster struct {
 
 type TemplateData struct {
 	Clusters []Cluster
-	Errors   []string
+	Errors   []error
 }
 
-func Render(clusters []string, errors []string) (string, error) {
+func Render(clusters []string, errors []error) (string, error) {
 	fmt.Println("Rendering report")
 
 	reportTemplate, _ := f.ReadFile("template.gotmpl")
