@@ -74,13 +74,13 @@ func (s Service) QueryClusters(t time.Time) ([]string, error) {
 	}
 
 	if value == nil {
-		return clusters, microerror.Mask(fmt.Errorf("query %s returned nil value", query))
+		return clusters, microerror.Mask(fmt.Errorf("query %s returned nil value for time %s", query, t))
 	}
 
 	vector, ok := value.(model.Vector)
 	if ok {
 		if vector.Len() == 0 {
-			return clusters, microerror.Mask(fmt.Errorf("query %s returned an empty result", query))
+			return clusters, microerror.Mask(fmt.Errorf("query %s returned an empty result for time %s", query, t))
 		}
 
 		for i := 0; i < vector.Len(); i++ {
@@ -102,7 +102,7 @@ func (s Service) QueryClusters(t time.Time) ([]string, error) {
 			clusters = append(clusters, fmt.Sprintf("%s/%s", installation, clusterID))
 		}
 	} else {
-		return clusters, microerror.Mask(fmt.Errorf("query %s did not return a vector", query))
+		return clusters, microerror.Mask(fmt.Errorf("query %s did not return a vector for time %s", query, t))
 	}
 
 	sort.Strings(clusters)
