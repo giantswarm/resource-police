@@ -4,7 +4,6 @@ package cortex
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"sort"
 	"time"
@@ -74,13 +73,13 @@ func (s Service) QueryClusters(t time.Time) ([]string, error) {
 	}
 
 	if value == nil {
-		return clusters, microerror.Mask(fmt.Errorf("query %s returned nil value for time %s", query, t))
+		return clusters, microerror.Maskf(executionFailedError, "query %s returned nil value for time %s", query, t)
 	}
 
 	vector, ok := value.(model.Vector)
 	if ok {
 		if vector.Len() == 0 {
-			return clusters, microerror.Mask(fmt.Errorf("query %s returned an empty result for time %s", query, t))
+			return clusters, microerror.Maskf(executionFailedError, "query %s returned an empty result for time %s", query, t)
 		}
 
 		for i := 0; i < vector.Len(); i++ {
@@ -90,19 +89,19 @@ func (s Service) QueryClusters(t time.Time) ([]string, error) {
 			if val, ok := vector[i].Metric["installation"]; ok {
 				installation = string(val)
 			} else {
-				return clusters, microerror.Mask(errors.New("could not find required label 'installation' in sample"))
+				return clusters, microerror.Maskf(executionFailedError, "could not find required label 'installation' in sample")
 			}
 
 			if val, ok := vector[i].Metric["cluster_id"]; ok {
 				clusterID = string(val)
 			} else {
-				return clusters, microerror.Mask(errors.New("could not find required label 'cluster_id' in sample"))
+				return clusters, microerror.Maskf(executionFailedError, "could not find required label 'cluster_id' in sample")
 			}
 
 			clusters = append(clusters, fmt.Sprintf("%s/%s", installation, clusterID))
 		}
 	} else {
-		return clusters, microerror.Mask(fmt.Errorf("query %s did not return a vector for time %s", query, t))
+		return clusters, microerror.Maskf(executionFailedError, "query %s did not return a vector for time %s", query, t)
 	}
 
 	sort.Strings(clusters)
