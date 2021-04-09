@@ -21,11 +21,11 @@ const (
 )
 
 type Config struct {
-	// Base URL of the prometheus API server.
+	// URL of the prometheus API server.
 	URL string
-	// User name.
+	// UserName for authentication with the API server.
 	UserName string
-	// Password (API token).
+	// Password (API token) for authentication with the API server.
 	Password string
 }
 
