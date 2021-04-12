@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2021-04-12
+
+- Changed the entire data fetching logic to use Prometheus/Cortex (https://giantswarm.grafana.net/) data. [#43](https://github.com/giantswarm/resource-police/pull/43)
+
 ## [0.2.5] - 2021-01-14
 
 ### Fixed
@@ -23,7 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Moved report template to go source file so it can be read when running in a container.
 
-[Unreleased]: https://github.com/giantswarm/resource-police/compare/v0.2.5...HEAD
+[Unreleased]: https://github.com/giantswarm/resource-police/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/giantswarm/resource-police/compare/v0.2.5...v1.0.0
 [0.2.5]: https://github.com/giantswarm/resource-police/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/giantswarm/resource-police/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/giantswarm/resource-police/compare/v0.2.1...v0.2.3
