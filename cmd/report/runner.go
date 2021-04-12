@@ -2,15 +2,16 @@ package report
 
 import (
 	"context"
-	"fmt"
 	"io"
-	"sort"
+	"time"
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/cobra"
 
-	"github.com/giantswarm/resource-police/pkg/installation"
+	"github.com/giantswarm/resource-police/pkg/cortex"
+	"github.com/giantswarm/resource-police/pkg/intersect"
+	"github.com/giantswarm/resource-police/pkg/report"
 	"github.com/giantswarm/resource-police/pkg/slack"
 )
 
@@ -39,41 +40,39 @@ func (r *runner) Run(cmd *cobra.Command, args []string) error {
 
 func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) error {
 	var err error
+	var errors []error
 
-	var errors []string
-
-	var testInstallations []installation.Installation
+	var clusters []string
 	{
-		c := installation.Config{
-			Logger: r.logger,
-
-			InstallationsConfigFile: r.flag.InstallationsConfigFile,
-		}
-
-		testInstallations, err = installation.New(c)
+		cortexService, err := cortex.New(cortex.Config{
+			URL:      r.flag.CortexEndpoint,
+			UserName: r.flag.CortexUsername,
+			Password: r.flag.CortexPassword,
+		})
 		if err != nil {
 			return microerror.Mask(err)
 		}
-	}
 
-	var clustersToDelete []*installation.Cluster
-	{
-		for _, i := range testInstallations {
-			clusters, err := installation.ListClusters(i)
-			if err == nil {
-				clustersToDelete = append(clustersToDelete, clusters...)
-			} else {
-				// collect errors, but continue
-				errors = append(errors, fmt.Sprintf("Could not list clusters in installation `%s`: `%s`", i.Name, err))
-			}
+		// Fetch the clusters that exist right now.
+		now := time.Now()
+		clustersNow, err := cortexService.QueryClusters(now)
+		if err != nil {
+			errors = append(errors, err)
 		}
+
+		// Fetch the clusters that existed three hours ago.
+		// That's the age threshold we use for reporting a test cluster.
+		threeHoursAgo := now.Add(-(time.Hour * 3))
+		clustersEarlier, err := cortexService.QueryClusters(threeHoursAgo)
+		if err != nil {
+			errors = append(errors, err)
+		}
+
+		// Create intersection of both queries.
+		clusters = intersect.StringSlice(clustersNow, clustersEarlier)
 	}
 
-	sort.Slice(clustersToDelete, func(i, j int) bool {
-		return clustersToDelete[i].Age.Milliseconds() > clustersToDelete[j].Age.Milliseconds()
-	})
-
-	report, err := installation.RenderReport(clustersToDelete, errors)
+	report, err := report.Render(clusters, errors)
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -91,10 +90,6 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 			return microerror.Mask(err)
 		}
 	}
-
-	// fmt.Println("Report preview:")
-	// fmt.Println(report)
-	// return nil
 
 	err = slackService.SendReport(report)
 	if err != nil {

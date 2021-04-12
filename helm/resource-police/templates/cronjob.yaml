@@ -24,8 +24,14 @@ spec:
           containers:
           - args:
             - report
-            - --installations.config.file=/resource-police-config/installations.yaml
             env:
+            - name: CORTEX_USER_NAME
+              value: "{{ .Values.cortexUserName }}"
+            - name: CORTEX_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: cortexPassword
+                  name: {{ .Values.name }}
             - name: SLACK_WEBHOOK_ENDPOINT
               valueFrom:
                 secretKeyRef:
@@ -34,10 +40,6 @@ spec:
             image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
             imagePullPolicy: Always
             name: {{ .Values.name }}
-            volumeMounts:
-            - mountPath: /resource-police-config
-              name: {{ .Values.name }}
-              readOnly: true
           dnsPolicy: ClusterFirst
           restartPolicy: Never
           schedulerName: default-scheduler
@@ -45,13 +47,5 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
           serviceAccountName: {{ .Values.name }} 
-          volumes:
-          - name: {{ .Values.name }}
-            secret:
-              defaultMode: 420
-              items:
-              - key: installations.yaml
-                path: installations.yaml
-              secretName: {{ .Values.name }}
   schedule: "0 8,17 * * 1-5"
   successfulJobsHistoryLimit: 3

@@ -1,0 +1,15 @@
+{{- if .Clusters -}}
+*Test clusters that should be deleted*
+
+{{ range  .Clusters -}}
+- `{{ .InstallationName }}` / `{{ .ID }}`
+{{ end }}
+{{- end }}
+
+{{ if .Errors -}}
+Some errors occurred:
+
+{{ range  .Errors -}}
+- {{ . }}
+{{ end -}}
+{{- end -}}
