@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2021-04-12
 
+- Changed the entire data fetching logic to use Prometheus/Cortex (https://giantswarm.grafana.net/) data. [#43](https://github.com/giantswarm/resource-police/pull/43)
+
 ## [0.2.5] - 2021-01-14
 
 ### Fixed
