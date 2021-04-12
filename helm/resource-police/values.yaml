@@ -8,5 +8,6 @@ image:
   name: giantswarm/resource-police
   tag: [[ .Version ]]
 
-installations: []
 slackWebhookEndpoint:
+cortexUserName: "10755"
+cortexPassword:

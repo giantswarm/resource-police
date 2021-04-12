@@ -11,7 +11,7 @@ import (
 
 const (
 	name        = "report"
-	description = "Tenant clusters usage report."
+	description = "Workload clusters usage report."
 )
 
 type Config struct {

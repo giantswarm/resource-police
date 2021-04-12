@@ -39,7 +39,7 @@ func New(config Config) (*Slack, error) {
 }
 
 func (s *Slack) SendReport(report string) error {
-	fmt.Println("Sending report into slack #ops channel...")
+	fmt.Println("Sending report to slack...")
 
 	requestBody, err := json.Marshal(map[string]string{
 		"text": report,
