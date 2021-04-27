@@ -1,26 +1,26 @@
 {{- if .Clusters3Days -}}
-*Test clusters older than three days*
+:computer-fire: Test clusters *older than three days* - *Please delete these!*
 
 {{ range  .Clusters3Days -}}
 - `{{ .Installation }}` / `{{ .ID }}` (v{{ .Release }})
 {{ end }}
 {{- end }}
 {{ if .Clusters1Day -}}
-*Test clusters older than a day*
+:money_with_wings: Test clusters older than a day - Please delete yours if no longer needed.
 
 {{ range  .Clusters1Day -}}
 - `{{ .Installation }}` / `{{ .ID }}` (v{{ .Release }})
 {{ end }}
 {{- end }}
 {{ if .Clusters3Hours -}}
-*Test clusters older than three hours*
+:awareness_ribbon: Test clusters older than three hours
 
 {{ range  .Clusters3Hours -}}
 - `{{ .Installation }}` / `{{ .ID }}` (v{{ .Release }})
 {{ end }}
 {{- end }}
 {{ if .ClustersRest -}}
-*Newer test clusters*
+:seedling: Newer test clusters
 
 {{ range  .ClustersRest -}}
 - `{{ .Installation }}` / `{{ .ID }}` (v{{ .Release }})
@@ -28,7 +28,7 @@
 {{- end }}
 
 {{ if .Errors -}}
-Some errors occurred:
+:warning: Some errors occurred:
 
 {{ range  .Errors -}}
 - {{ . }}
