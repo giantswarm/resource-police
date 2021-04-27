@@ -3,14 +3,12 @@ package report
 import (
 	"context"
 	"io"
-	"time"
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/cobra"
 
 	"github.com/giantswarm/resource-police/pkg/cortex"
-	"github.com/giantswarm/resource-police/pkg/intersect"
 	"github.com/giantswarm/resource-police/pkg/report"
 	"github.com/giantswarm/resource-police/pkg/slack"
 )
@@ -39,10 +37,9 @@ func (r *runner) Run(cmd *cobra.Command, args []string) error {
 }
 
 func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) error {
-	var err error
 	var errors []error
 
-	var clusters []string
+	var clusters []cortex.Cluster
 	{
 		cortexService, err := cortex.New(cortex.Config{
 			URL:      r.flag.CortexEndpoint,
@@ -53,23 +50,11 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 			return microerror.Mask(err)
 		}
 
-		// Fetch the clusters that exist right now.
-		now := time.Now()
-		clustersNow, err := cortexService.QueryClusters(now)
+		// Fetch the clusters info
+		clusters, err = cortexService.QueryClusters()
 		if err != nil {
 			errors = append(errors, err)
 		}
-
-		// Fetch the clusters that existed three hours ago.
-		// That's the age threshold we use for reporting a test cluster.
-		threeHoursAgo := now.Add(-(time.Hour * 3))
-		clustersEarlier, err := cortexService.QueryClusters(threeHoursAgo)
-		if err != nil {
-			errors = append(errors, err)
-		}
-
-		// Create intersection of both queries.
-		clusters = intersect.StringSlice(clustersNow, clustersEarlier)
 	}
 
 	report, err := report.Render(clusters, errors)

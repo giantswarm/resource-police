@@ -4,8 +4,11 @@ import (
 	"embed"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
+
+	"github.com/giantswarm/resource-police/pkg/cortex"
 )
 
 //go:embed golden/*
@@ -14,19 +17,32 @@ var fs embed.FS
 func Test_RenderReport(t *testing.T) {
 	tests := []struct {
 		name       string
-		clusters   []string
+		clusters   []cortex.Cluster
 		errors     []error
 		goldenFile string
 	}{
 		{
-			name:       "Success",
-			clusters:   []string{"gaia/def34", "ginger/abc12"},
+			name: "Success",
+			clusters: []cortex.Cluster{
+				{
+					Installation:   "gaia",
+					ID:             "def34",
+					Release:        "1.2.3",
+					FirstTimestamp: time.Now().UTC().Add(-4 * time.Hour),
+				},
+				{
+					Installation:   "ginger",
+					ID:             "abc12",
+					Release:        "1.2.3-myversion",
+					FirstTimestamp: time.Now().UTC().Add(-5 * 24 * time.Hour),
+				},
+			},
 			errors:     []error{errors.New("First error"), errors.New("Second error")},
 			goldenFile: "success.golden",
 		},
 		{
 			name:       "Errors-only",
-			clusters:   []string{},
+			clusters:   []cortex.Cluster{},
 			errors:     []error{errors.New("nothing but failure")},
 			goldenFile: "error.golden",
 		},
