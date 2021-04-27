@@ -5,7 +5,7 @@ package cortex
 import (
 	"context"
 	"fmt"
-	"sort"
+	"log"
 	"time"
 
 	"github.com/giantswarm/microerror"
@@ -17,6 +17,19 @@ import (
 
 const (
 	query = `aggregation:giantswarm:cluster_release_version{pipeline="testing"}`
+
+	// Amount of time to look back. The longer the time frame, the slower
+	// and more expensive the query.
+	timeRange = 1 * 24 * time.Hour
+
+	// If a cluster has been last more than this much time ago,
+	// it is considered deleted. Be careful to make this at least as
+	// large as the stepInterval.
+	lastSeenDurationThreshold = time.Hour
+
+	// Step interval to query. Should be large enough to avoid returning a huge
+	// result with every query.
+	stepInterval = time.Hour
 )
 
 type Config struct {
@@ -56,15 +69,30 @@ func New(conf Config) (*Service, error) {
 	return s, nil
 }
 
+// Cluster represents a workload cluster.
+type Cluster struct {
+	Installation   string
+	ID             string
+	Release        string
+	FirstTimestamp time.Time
+}
+
 // QueryClusters queries cortex for a list of workload clusters
 // that existed in time series at a given point in time.
-// Returns a sorted slice of strings with format "<installation>/<cluster_id>".
-func (s Service) QueryClusters(t time.Time) ([]string, error) {
-	clusters := []string{}
+// Returns a slice of Clusters.
+func (s Service) QueryClusters() ([]Cluster, error) {
+	clusters := []Cluster{}
 
 	v1api := v1.NewAPI(s.client)
 
-	value, warnings, err := v1api.Query(context.Background(), query, t)
+	now := time.Now().UTC()
+	queryRange := v1.Range{
+		Start: now.Add(-timeRange),
+		End:   now,
+		Step:  stepInterval,
+	}
+
+	value, warnings, err := v1api.QueryRange(context.Background(), query, queryRange)
 	if err != nil {
 		return clusters, microerror.Mask(err)
 	}
@@ -73,38 +101,61 @@ func (s Service) QueryClusters(t time.Time) ([]string, error) {
 	}
 
 	if value == nil {
-		return clusters, microerror.Maskf(executionFailedError, "query %s returned nil value for time %s", query, t)
+		return clusters, microerror.Maskf(executionFailedError, "query %s returned nil value", query)
 	}
 
-	vector, ok := value.(model.Vector)
+	matrix, ok := value.(model.Matrix)
 	if ok {
-		if vector.Len() == 0 {
-			return clusters, microerror.Maskf(executionFailedError, "query %s returned an empty result for time %s", query, t)
+		if matrix.Len() == 0 {
+			log.Printf("Returned result is empty.\n")
+			return clusters, microerror.Maskf(executionFailedError, "query %s returned an empty result", query)
+		} else {
+			log.Printf("Returned result is matrix with %d series.\n", matrix.Len())
 		}
 
-		for i := 0; i < vector.Len(); i++ {
+		for i := 0; i < matrix.Len(); i++ {
 			installation := ""
 			clusterID := ""
+			release := ""
 
-			if val, ok := vector[i].Metric["installation"]; ok {
+			if val, ok := matrix[i].Metric["installation"]; ok {
 				installation = string(val)
 			} else {
 				return clusters, microerror.Maskf(executionFailedError, "could not find required label 'installation' in sample")
 			}
 
-			if val, ok := vector[i].Metric["cluster_id"]; ok {
+			if val, ok := matrix[i].Metric["cluster_id"]; ok {
 				clusterID = string(val)
 			} else {
 				return clusters, microerror.Maskf(executionFailedError, "could not find required label 'cluster_id' in sample")
 			}
 
-			clusters = append(clusters, fmt.Sprintf("%s/%s", installation, clusterID))
+			if val, ok := matrix[i].Metric["release_version"]; ok {
+				release = string(val)
+			} else {
+				return clusters, microerror.Maskf(executionFailedError, "could not find required label 'release_version' in sample")
+			}
+
+			first := int64(matrix[i].Values[0].Timestamp)
+			latest := int64(matrix[i].Values[len(matrix[i].Values)-1].Timestamp)
+
+			// Determine whether cluster still exists
+			lastSeenDuration := now.Sub(time.Unix(latest/1000, 0))
+			if lastSeenDuration > lastSeenDurationThreshold {
+				// Skip as not existing any more.
+				continue
+			}
+			c := Cluster{
+				Installation:   installation,
+				ID:             clusterID,
+				Release:        release,
+				FirstTimestamp: time.Unix(first/1000, 0),
+			}
+			clusters = append(clusters, c)
 		}
 	} else {
-		return clusters, microerror.Maskf(executionFailedError, "query %s did not return a vector for time %s", query, t)
+		return clusters, microerror.Maskf(executionFailedError, "query %s did not return a matrix", query)
 	}
-
-	sort.Strings(clusters)
 
 	return clusters, nil
 }

@@ -1,8 +1,29 @@
-{{- if .Clusters -}}
-*Test clusters that should be deleted*
+{{- if .Clusters3Days -}}
+*Test clusters older than three days*
 
-{{ range  .Clusters -}}
-- `{{ .InstallationName }}` / `{{ .ID }}`
+{{ range  .Clusters3Days -}}
+- `{{ .Installation }}` / `{{ .ID }}` (v{{ .Release }})
+{{ end }}
+{{- end }}
+{{ if .Clusters1Day -}}
+*Test clusters older than a day*
+
+{{ range  .Clusters1Day -}}
+- `{{ .Installation }}` / `{{ .ID }}` (v{{ .Release }})
+{{ end }}
+{{- end }}
+{{ if .Clusters3Hours -}}
+*Test clusters older than three hours*
+
+{{ range  .Clusters3Hours -}}
+- `{{ .Installation }}` / `{{ .ID }}` (v{{ .Release }})
+{{ end }}
+{{- end }}
+{{ if .ClustersRest -}}
+*Newer test clusters*
+
+{{ range  .ClustersRest -}}
+- `{{ .Installation }}` / `{{ .ID }}` (v{{ .Release }})
 {{ end }}
 {{- end }}
 

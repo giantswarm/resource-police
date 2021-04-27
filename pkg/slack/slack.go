@@ -3,7 +3,7 @@ package slack
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/giantswarm/microerror"
@@ -39,7 +39,7 @@ func New(config Config) (*Slack, error) {
 }
 
 func (s *Slack) SendReport(report string) error {
-	fmt.Println("Sending report to slack...")
+	log.Println("Sending report to slack...")
 
 	requestBody, err := json.Marshal(map[string]string{
 		"text": report,
@@ -53,7 +53,7 @@ func (s *Slack) SendReport(report string) error {
 		return microerror.Mask(err)
 	}
 
-	fmt.Println("Report has been sent.")
+	log.Println("Report has been sent.")
 
 	return nil
 }

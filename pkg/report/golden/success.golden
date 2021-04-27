@@ -1,7 +1,12 @@
-*Test clusters that should be deleted*
+*Test clusters older than three days*
 
-- `gaia` / `def34`
-- `ginger` / `abc12`
+- `ginger` / `abc12` (v1.2.3-myversion)
+
+
+*Test clusters older than three hours*
+
+- `gaia` / `def34` (v1.2.3)
+
 
 
 Some errors occurred:
