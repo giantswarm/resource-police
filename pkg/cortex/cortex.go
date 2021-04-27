@@ -22,7 +22,7 @@ const (
 	// and more expensive the query.
 	timeRange = 1 * 24 * time.Hour
 
-	// If a cluster has been last more than this much time ago,
+	// If a cluster has been last seen more than this much time ago,
 	// it is considered deleted. Be careful to make this at least as
 	// large as the stepInterval.
 	lastSeenDurationThreshold = time.Hour
