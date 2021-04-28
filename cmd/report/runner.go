@@ -2,6 +2,7 @@ package report
 
 import (
 	"context"
+	"fmt"
 	"io"
 
 	"github.com/giantswarm/microerror"
@@ -60,6 +61,12 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 	report, err := report.Render(clusters, errors)
 	if err != nil {
 		return microerror.Mask(err)
+	}
+
+	if r.flag.DryRun {
+		fmt.Printf("\nReport:\n\n")
+		fmt.Println(report)
+		return nil
 	}
 
 	var slackService *slack.Slack

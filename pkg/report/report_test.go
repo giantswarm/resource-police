@@ -24,12 +24,28 @@ func Test_RenderReport(t *testing.T) {
 		{
 			name: "Success",
 			clusters: []cortex.Cluster{
+				// 2 hours old cluster
+				{
+					Installation:   "foobar",
+					ID:             "r72ux",
+					Release:        "14.5.6",
+					FirstTimestamp: time.Now().UTC().Add(-2 * time.Hour),
+				},
+				// 4 hours old cluster
 				{
 					Installation:   "gaia",
 					ID:             "def34",
 					Release:        "1.2.3",
 					FirstTimestamp: time.Now().UTC().Add(-4 * time.Hour),
 				},
+				// 2 days old cluster
+				{
+					Installation:   "blah",
+					ID:             "t2ayx",
+					Release:        "13.0.4",
+					FirstTimestamp: time.Now().UTC().Add(-2 * 24 * time.Hour),
+				},
+				// 5 days old cluster
 				{
 					Installation:   "ginger",
 					ID:             "abc12",
