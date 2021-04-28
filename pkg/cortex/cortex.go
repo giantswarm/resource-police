@@ -20,7 +20,7 @@ const (
 
 	// Amount of time to look back. The longer the time frame, the slower
 	// and more expensive the query.
-	timeRange = 1 * 24 * time.Hour
+	timeRange = 7 * 24 * time.Hour
 
 	// If a cluster has been last seen more than this much time ago,
 	// it is considered deleted. Be careful to make this at least as
@@ -145,6 +145,7 @@ func (s Service) QueryClusters() ([]Cluster, error) {
 				// Skip as not existing any more.
 				continue
 			}
+
 			c := Cluster{
 				Installation:   installation,
 				ID:             clusterID,
