@@ -10,6 +10,8 @@ import (
 )
 
 const (
+	flagDryRun = "dryrun"
+
 	flagSlackWebhookEndpoint = "slack.webhook.endpoint"
 
 	flagCortexEndpoint = "cortex.endpoint.url"
@@ -18,6 +20,8 @@ const (
 )
 
 type flag struct {
+	DryRun bool
+
 	SlackWebhookEndpoint string
 
 	CortexEndpoint string
@@ -26,6 +30,7 @@ type flag struct {
 }
 
 func (f *flag) Init(cmd *cobra.Command) {
+	cmd.Flags().BoolVar(&f.DryRun, flagDryRun, false, "Set this to print the report to STDOUT and avoid sending it to Slack")
 	cmd.Flags().StringVar(&f.SlackWebhookEndpoint, flagSlackWebhookEndpoint, os.Getenv(env.SlackWebhookEndpoint), "Slack Webhook endpoint for posting messages into channel")
 	cmd.Flags().StringVar(&f.CortexEndpoint, flagCortexEndpoint, "https://prometheus-us-central1.grafana.net/api/prom", "Cortex endpoint URL")
 	cmd.Flags().StringVar(&f.CortexUsername, flagCortexUsername, os.Getenv(env.CortexUserName), "Cortex user ID")
