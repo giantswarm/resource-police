@@ -29,6 +29,7 @@ func Test_RenderReport(t *testing.T) {
 					Installation:   "foobar",
 					ID:             "r72ux",
 					Release:        "14.5.6",
+					Provider:       "openstack",
 					FirstTimestamp: time.Now().UTC().Add(-2 * time.Hour),
 				},
 				// 4 hours old cluster
@@ -36,6 +37,7 @@ func Test_RenderReport(t *testing.T) {
 					Installation:   "gaia",
 					ID:             "def34",
 					Release:        "1.2.3",
+					Provider:       "aws",
 					FirstTimestamp: time.Now().UTC().Add(-4 * time.Hour),
 				},
 				// 2 days old cluster
@@ -43,6 +45,7 @@ func Test_RenderReport(t *testing.T) {
 					Installation:   "blah",
 					ID:             "t2ayx",
 					Release:        "13.0.4",
+					Provider:       "azure",
 					FirstTimestamp: time.Now().UTC().Add(-2 * 24 * time.Hour),
 				},
 				// 5 days old cluster
@@ -50,6 +53,7 @@ func Test_RenderReport(t *testing.T) {
 					Installation:   "ginger",
 					ID:             "abc12",
 					Release:        "1.2.3-myversion",
+					Provider:       "aws",
 					FirstTimestamp: time.Now().UTC().Add(-5 * 24 * time.Hour),
 				},
 			},
