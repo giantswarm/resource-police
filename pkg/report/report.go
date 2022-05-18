@@ -37,9 +37,14 @@ func Render(clusters []cortex.Cluster, errors []error) (string, error) {
 		Errors: errors,
 	}
 
-	// Sort by installation name
+	// Sort by provider and installation name
 	sort.Slice(clusters, func(i, j int) bool {
 		return clusters[i].Installation < clusters[j].Installation
+	})
+
+	// Afterwards sort by provider
+	sort.Slice(clusters, func(i, j int) bool {
+		return clusters[i].Provider < clusters[j].Provider
 	})
 
 	// Group clusters by age

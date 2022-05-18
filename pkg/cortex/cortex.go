@@ -74,6 +74,7 @@ type Cluster struct {
 	Installation   string
 	ID             string
 	Release        string
+	Provider       string
 	FirstTimestamp time.Time
 }
 
@@ -117,6 +118,7 @@ func (s Service) QueryClusters() ([]Cluster, error) {
 			installation := ""
 			clusterID := ""
 			release := ""
+			provider := ""
 
 			if val, ok := matrix[i].Metric["installation"]; ok {
 				installation = string(val)
@@ -135,6 +137,11 @@ func (s Service) QueryClusters() ([]Cluster, error) {
 			} else {
 				return clusters, microerror.Maskf(executionFailedError, "could not find required label 'release_version' in sample")
 			}
+			if val, ok := matrix[i].Metric["provider"]; ok {
+				provider = string(val)
+			} else {
+				return clusters, microerror.Maskf(executionFailedError, "could not find required label 'provider' in sample")
+			}
 
 			first := int64(matrix[i].Values[0].Timestamp)
 			latest := int64(matrix[i].Values[len(matrix[i].Values)-1].Timestamp)
@@ -150,6 +157,7 @@ func (s Service) QueryClusters() ([]Cluster, error) {
 				Installation:   installation,
 				ID:             clusterID,
 				Release:        release,
+				Provider:       provider,
 				FirstTimestamp: time.Unix(first/1000, 0),
 			}
 			clusters = append(clusters, c)
