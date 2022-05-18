@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2022-05-18
+
 ### Added
 
 - Add provider label.
@@ -36,7 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Moved report template to go source file so it can be read when running in a container.
 
-[Unreleased]: https://github.com/giantswarm/resource-police/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/giantswarm/resource-police/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/giantswarm/resource-police/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/giantswarm/resource-police/compare/v1.0.0...v1.1.1
 [1.0.0]: https://github.com/giantswarm/resource-police/compare/v0.2.5...v1.0.0
 [0.2.5]: https://github.com/giantswarm/resource-police/compare/v0.2.4...v0.2.5
