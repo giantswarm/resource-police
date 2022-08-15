@@ -1,4 +1,4 @@
-FROM quay.io/giantswarm/alpine:3.14-giantswarm
+FROM quay.io/giantswarm/alpine:3.16.2-giantswarm
 
 ADD ./resource-police /resource-police
 
