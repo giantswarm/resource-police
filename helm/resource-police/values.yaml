@@ -6,8 +6,12 @@ groupID: 1000
 image:
   registry: quay.io
   name: giantswarm/resource-police
-  tag: [[ .Version ]]
+  tag: null  # default: Version in Chart.yaml, change it if you want to override
 
 slackWebhookEndpoint:
 cortexUserName: "10755"
 cortexPassword:
+
+global:
+  podSecurityStandards:
+    enforced: false

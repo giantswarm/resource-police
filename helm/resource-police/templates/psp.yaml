@@ -1,7 +1,9 @@
+{{- if and (.Capabilities.APIVersions.Has "policy/v1beta1") (not .Values.global.podSecurityStandards.enforced) }}
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
   name: {{ .Values.name }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ .Values.name }}
     giantswarm.io/service-type: "managed"
@@ -28,3 +30,4 @@ spec:
       - min: 1
         max: 65535
   readOnlyRootFilesystem: false
+{{- end -}}

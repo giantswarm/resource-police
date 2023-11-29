@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Bump to Go 1.21 and newer dependencies
+- Switch to `batch/v1` apiVersion for the Cronjob.
+
+### Added
+
+- Add policy exception.
 
 ## [1.2.0] - 2022-05-18
 
