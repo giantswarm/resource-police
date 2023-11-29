@@ -3,7 +3,7 @@
     "type": "object",
     "properties": {
         "cortexPassword": {
-            "type": "null"
+            "type": "string"
         },
         "cortexUserName": {
             "type": "string"
@@ -42,7 +42,7 @@
             "type": "string"
         },
         "slackWebhookEndpoint": {
-            "type": "null"
+            "type": "string"
         },
         "userID": {
             "type": "integer"
