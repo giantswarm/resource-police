@@ -37,7 +37,7 @@ spec:
                 secretKeyRef:
                   key: slackWebhookEndpoint
                   name: {{ .Values.name }}
-            image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+            image: {{ include "resourcePolice.containerImage" . | quote }}
             imagePullPolicy: Always
             name: {{ .Values.name }}
             securityContext:
