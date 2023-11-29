@@ -10,7 +10,23 @@ metadata:
   annotations:
     "helm.sh/hook": "pre-install,pre-upgrade"
 spec:
-  exceptions: []
+  exceptions:
+    - policyName: disallow-capabilities-strict
+      ruleNames:
+        - autogen-cronjob-require-drop-all
+        - cronjob-require-drop-all
+    - policyName: restrict-seccomp-strict
+      ruleNames:
+        - autogen-cronjob-check-seccomp-strict
+        - cronjob-check-seccomp-strict
+    - policyName: require-run-as-nonroot
+      ruleNames:
+        - cronjob-run-as-non-root
+        - autogen-cronjob-run-as-non-root
+    - policyName: disallow-privilege-escalation
+      ruleNames:
+        - cronjob-privilege-escalation
+        - autogen-cronjob-privilege-escalation
   match:
     any:
       - resources:
