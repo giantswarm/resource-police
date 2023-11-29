@@ -14,6 +14,7 @@ workflows:
               only: /^v.*/
 
       - architect/push-to-docker:
+          context: architect
           name: push-resource-police-to-quay
           image: "quay.io/giantswarm/resource-police"
           username_envar: "QUAY_USERNAME"
@@ -26,6 +27,7 @@ workflows:
               only: /^v.*/
 
       - architect/push-to-app-catalog:
+          context: architect
           name: "package and push resource-police"
           app_catalog: "giantswarm-operations-platform-catalog"
           app_catalog_test: "giantswarm-operations-platform-test-catalog"
