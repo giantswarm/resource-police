@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2023-11-29
+
 ### Changed
 
 - Bump to Go 1.21 and newer dependencies
@@ -47,7 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Moved report template to go source file so it can be read when running in a container.
 
-[Unreleased]: https://github.com/giantswarm/resource-police/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/giantswarm/resource-police/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/giantswarm/resource-police/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/giantswarm/resource-police/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/giantswarm/resource-police/compare/v1.0.0...v1.1.1
 [1.0.0]: https://github.com/giantswarm/resource-police/compare/v0.2.5...v1.0.0
