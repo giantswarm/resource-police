@@ -8,7 +8,7 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/prometheus/client_golang v1.12.0
 	github.com/prometheus/common v0.32.1
-	github.com/spf13/cobra v1.3.0
+	github.com/spf13/cobra v1.8.0
 )
 
 require (
@@ -19,7 +19,7 @@ require (
 	github.com/go-logr/logr v1.3.0 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kr/text v0.2.0 // indirect
