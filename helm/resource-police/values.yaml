@@ -11,3 +11,7 @@ image:
 slackWebhookEndpoint:
 cortexUserName: "10755"
 cortexPassword:
+
+global:
+  podSecurityStandards:
+    enforced: false

@@ -2,10 +2,10 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: {{ .Values.name }}
-  metadata:
-    labels:
-      app: {{ .Values.name }}
-      giantswarm.io/service-type: "managed"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.name }}
+    giantswarm.io/service-type: "managed"
 spec:
   concurrencyPolicy: Allow
   failedJobsHistoryLimit: 1

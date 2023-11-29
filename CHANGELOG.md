@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Bump to Go 1.21 and newer dependencies
 
+### Added
+
+- Add policy exception.
+
 ## [1.2.0] - 2022-05-18
 
 ### Added
