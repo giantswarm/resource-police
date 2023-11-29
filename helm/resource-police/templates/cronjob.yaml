@@ -40,12 +40,25 @@ spec:
             image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
             imagePullPolicy: Always
             name: {{ .Values.name }}
+            securityContext:
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+              runAsUser: 1000
+              runAsGroup: 1000
+              runAsNonRoot: true
+              seccompProfile:
+                type: RuntimeDefault
           dnsPolicy: ClusterFirst
           restartPolicy: Never
           schedulerName: default-scheduler
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
           serviceAccountName: {{ .Values.name }} 
   schedule: "0 8,17 * * 1-5"
   successfulJobsHistoryLimit: 3
