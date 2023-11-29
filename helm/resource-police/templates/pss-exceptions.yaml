@@ -37,5 +37,5 @@ spec:
           namespaces:
             - {{ .Release.Namespace }}
           names:
-            - karpenter*
+            - {{ .Values.name }}*
 {{- end }}
