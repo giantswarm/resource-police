@@ -6,7 +6,7 @@ groupID: 1000
 image:
   registry: quay.io
   name: giantswarm/resource-police
-  tag: null  # default: appVersion in Chart.yaml, change it if you want to override
+  tag: null  # default: Version in Chart.yaml, change it if you want to override
 
 slackWebhookEndpoint:
 cortexUserName: "10755"
