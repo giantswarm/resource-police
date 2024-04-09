@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	query = `aggregation:giantswarm:cluster_release_version{pipeline="testing"}`
+	query = `aggregation:giantswarm:cluster_info{pipeline="testing",cluster_type="workload_cluster"}`
 
 	// Amount of time to look back. The longer the time frame, the slower
 	// and more expensive the query.
@@ -132,15 +132,20 @@ func (s Service) QueryClusters() ([]Cluster, error) {
 				return clusters, microerror.Maskf(executionFailedError, "could not find required label 'cluster_id' in sample")
 			}
 
-			if val, ok := matrix[i].Metric["release_version"]; ok {
-				release = string(val)
-			} else {
-				return clusters, microerror.Maskf(executionFailedError, "could not find required label 'release_version' in sample")
-			}
 			if val, ok := matrix[i].Metric["provider"]; ok {
 				provider = string(val)
 			} else {
 				return clusters, microerror.Maskf(executionFailedError, "could not find required label 'provider' in sample")
+			}
+
+			// Vintage only: try to find release version.
+			if val, ok := matrix[i].Metric["release_version"]; ok {
+				release = string(val)
+			} else {
+				// AWS is the only vintage provider out there.
+				if provider == "aws" {
+					log.Printf("could not find required label 'release_version' in sample for cluster %s\n", clusterID)
+				}
 			}
 
 			first := int64(matrix[i].Values[0].Timestamp)

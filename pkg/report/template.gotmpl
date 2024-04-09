@@ -2,28 +2,28 @@
 :computer-fire: Test clusters *older than three days* - *Please delete these!*
 
 {{ range  .Clusters3Days -}}
-- `{{ .Provider }}` / `{{ .Installation }}` / `{{ .ID }}` (v{{ .Release }})
+- `{{ .Provider }}` / `{{ .Installation }}` / `{{ .ID }}`{{ if .Release }} (v{{ .Release }}){{ end }}
 {{ end }}
 {{- end }}
 {{ if .Clusters1Day -}}
 :money_with_wings: Test clusters older than a day - Please delete yours if no longer needed.
 
 {{ range  .Clusters1Day -}}
-- `{{ .Provider }}` / `{{ .Installation }}` / `{{ .ID }}` (v{{ .Release }})
+- `{{ .Provider }}` / `{{ .Installation }}` / `{{ .ID }}`{{ if .Release }} (v{{ .Release }}){{ end }}
 {{ end }}
 {{- end }}
 {{ if .Clusters3Hours -}}
 :awareness_ribbon: Test clusters older than three hours
 
 {{ range  .Clusters3Hours -}}
-- `{{ .Provider }}` / `{{ .Installation }}` / `{{ .ID }}` (v{{ .Release }})
+- `{{ .Provider }}` / `{{ .Installation }}` / `{{ .ID }}`{{ if .Release }} (v{{ .Release }}){{ end }}
 {{ end }}
 {{- end }}
 {{ if .ClustersRest -}}
 :seedling: Newer test clusters
 
 {{ range  .ClustersRest -}}
-- `{{ .Provider }}` / `{{ .Installation }}` / `{{ .ID }}` (v{{ .Release }})
+- `{{ .Provider }}` / `{{ .Installation }}` / `{{ .ID }}`{{ if .Release }} (v{{ .Release }}){{ end }}
 {{ end }}
 {{- end }}
 
