@@ -1,18 +1,18 @@
 :computer-fire: Test clusters *older than three days* - *Please delete these!*
 
-- `aws` / `ginger` / `abc12` (v1.2.3-myversion)
+- `aws` / `ginger` / `<unknown>` / `abc12` (v1.2.3-myversion)
 
 :money_with_wings: Test clusters older than a day - Please delete yours if no longer needed.
 
-- `azure` / `blah` / `t2ayx` (v13.0.4)
+- `azure` / `blah` / `mynamespace3` / `t2ayx` (v13.0.4)
 
 :awareness_ribbon: Test clusters older than three hours
 
-- `aws` / `gaia` / `def34` (v1.2.3)
+- `aws` / `gaia` / `mynamespace2` / `def34` (v1.2.3)
 
 :seedling: Newer test clusters
 
-- `openstack` / `foobar` / `r72ux` (v14.5.6)
+- `openstack` / `foobar` / `mynamespace1` / `r72ux` (v14.5.6)
 
 
 :warning: Some errors occurred:
