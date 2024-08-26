@@ -71,11 +71,12 @@ func New(conf Config) (*Service, error) {
 
 // Cluster represents a workload cluster.
 type Cluster struct {
-	Installation   string
-	ID             string
-	Release        string
-	Provider       string
-	FirstTimestamp time.Time
+	Installation         string
+	NamespaceDescription string
+	ID                   string
+	Release              string
+	Provider             string
+	FirstTimestamp       time.Time
 }
 
 // QueryClusters queries cortex for a list of workload clusters
@@ -119,6 +120,7 @@ func (s Service) QueryClusters() ([]Cluster, error) {
 			clusterID := ""
 			release := ""
 			provider := ""
+			namespaceDescription := ""
 
 			if val, ok := matrix[i].Metric["installation"]; ok {
 				installation = string(val)
@@ -148,6 +150,17 @@ func (s Service) QueryClusters() ([]Cluster, error) {
 				}
 			}
 
+			if val, ok := matrix[i].Metric["exported_namespace"]; ok {
+				namespaceDescription = string(val)
+			} else {
+				// We only aggregate `exported_namespace` since CAPI clusters
+				if provider != "aws" {
+					log.Printf("could not find required label 'exported_namespace' in sample for cluster %q\n", clusterID)
+				}
+
+				namespaceDescription = "<unknown>"
+			}
+
 			first := int64(matrix[i].Values[0].Timestamp)
 			latest := int64(matrix[i].Values[len(matrix[i].Values)-1].Timestamp)
 
@@ -159,11 +172,12 @@ func (s Service) QueryClusters() ([]Cluster, error) {
 			}
 
 			c := Cluster{
-				Installation:   installation,
-				ID:             clusterID,
-				Release:        release,
-				Provider:       provider,
-				FirstTimestamp: time.Unix(first/1000, 0),
+				Installation:         installation,
+				NamespaceDescription: namespaceDescription,
+				ID:                   clusterID,
+				Release:              release,
+				Provider:             provider,
+				FirstTimestamp:       time.Unix(first/1000, 0),
 			}
 			clusters = append(clusters, c)
 		}
