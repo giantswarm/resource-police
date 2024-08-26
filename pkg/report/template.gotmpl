@@ -34,3 +34,13 @@
 - {{ . }}
 {{ end -}}
 {{- end -}}
+
+{{ if and
+    (not .Clusters3Days)
+    (not .Clusters1Day)
+    (not .Clusters3Hours)
+    (not .ClustersRest)
+    (not .Errors)
+}}
+All good!
+{{- end -}}
