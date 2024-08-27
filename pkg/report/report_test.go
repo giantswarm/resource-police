@@ -70,6 +70,12 @@ func Test_RenderReport(t *testing.T) {
 			errors:     []error{errors.New("nothing but failure")},
 			goldenFile: "error.golden",
 		},
+		{
+			name:       "Success and no leftover clusters",
+			clusters:   []cortex.Cluster{},
+			errors:     []error{},
+			goldenFile: "success-all-good.golden",
+		},
 	}
 
 	for _, tt := range tests {
