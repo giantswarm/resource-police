@@ -9,12 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.5.1] - 2024-08-27
 
+### Added
+
+- Add success message if no test clusters are left over
+
 ## [1.5.0] - 2024-08-26
 
 ### Added
 
 - Show cluster namespace if available in the metric
-- Add success message if no test clusters are left over
 
 ## [1.4.0] - 2024-04-09
 
