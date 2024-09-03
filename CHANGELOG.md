@@ -7,9 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.1] - 2024-08-27
+
+### Added
+
+- Add success message if no test clusters are left over
+
+## [1.5.0] - 2024-08-26
+
+### Added
+
+- Show cluster namespace if available in the metric
+
+## [1.4.0] - 2024-04-09
+
 ### Added
 
 - Add team label in resources.
+- Add support for CAPI clusters.
 
 ## [1.3.1] - 2023-11-30
 
@@ -59,7 +74,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Moved report template to go source file so it can be read when running in a container.
 
-[Unreleased]: https://github.com/giantswarm/resource-police/compare/v1.3.1...HEAD
+[Unreleased]: https://github.com/giantswarm/resource-police/compare/v1.5.1...HEAD
+[1.5.1]: https://github.com/giantswarm/resource-police/compare/v1.5.0...v1.5.1
+[1.5.0]: https://github.com/giantswarm/resource-police/compare/v1.4.0...v1.5.0
+[1.4.0]: https://github.com/giantswarm/resource-police/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/giantswarm/resource-police/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/giantswarm/resource-police/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/giantswarm/resource-police/compare/v1.1.1...v1.2.0

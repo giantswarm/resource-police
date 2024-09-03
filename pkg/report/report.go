@@ -7,6 +7,7 @@ import (
 	"embed"
 	"log"
 	"sort"
+	"strings"
 	"text/template"
 	"time"
 
@@ -71,5 +72,5 @@ func Render(clusters []cortex.Cluster, errors []error) (string, error) {
 
 	log.Println("Report has been rendered")
 
-	return renderedReport.String(), nil
+	return strings.TrimSpace(renderedReport.String()) + "\n", nil
 }
