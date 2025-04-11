@@ -1,6 +1,6 @@
 module github.com/giantswarm/resource-police
 
-go 1.21
+go 1.23.0
 
 require (
 	github.com/giantswarm/microerror v0.4.1
