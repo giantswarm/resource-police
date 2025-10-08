@@ -4,7 +4,7 @@ userID: 1000
 groupID: 1000
 
 image:
-  registry: quay.io
+  registry: gsoci.azurecr.io
   name: giantswarm/resource-police
   tag: null  # default: Version in Chart.yaml, change it if you want to override
 
