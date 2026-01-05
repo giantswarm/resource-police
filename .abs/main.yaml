@@ -4,4 +4,5 @@ generate-metadata: true
 chart-dir: ./helm/resource-police
 destination: build
 catalog-base-url: https://giantswarm.github.io/giantswarm-operations-platform-test-catalog/
+kubelinter-config: .abs/.kube-linter.yaml
 
