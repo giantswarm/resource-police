@@ -1,8 +1,9 @@
-apiVersion: v1
-appVersion: [[ .AppVersion ]]
+apiVersion: v2
+appVersion: 1.6.0-dev
 description: Report about tenant clusters in test installations
 home: https://github.com/giantswarm/resource-police
 name: resource-police
-version: [[ .Version ]]
+version: 1.6.0-dev
+icon: https://s.giantswarm.io/app-icons/giantswarm/1/dark.svg
 annotations:
-  application.giantswarm.io/team: phoenix
+  io.giantswarm.application.team: phoenix

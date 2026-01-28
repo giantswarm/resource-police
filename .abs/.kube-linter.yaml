@@ -1,0 +1,6 @@
+checks:
+  exclude:
+    # Resource requirements should be set based on actual usage data
+    - unset-cpu-requirements
+    - unset-memory-requirements
+
