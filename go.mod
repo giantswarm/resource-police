@@ -1,6 +1,6 @@
 module github.com/giantswarm/resource-police
 
-go 1.23.0
+go 1.25.0
 
 require (
 	github.com/giantswarm/microerror v0.4.1
@@ -32,8 +32,10 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/net v0.39.0 // indirect
 	golang.org/x/oauth2 v0.27.0 // indirect
-	golang.org/x/sys v0.32.0 // indirect
-	golang.org/x/text v0.24.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/text v0.40.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
+
+replace golang.org/x/net v0.39.0 => golang.org/x/net v0.57.0
