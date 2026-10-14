@@ -7,6 +7,7 @@ workflows:
   build:
     jobs:
     - architect/go-build:
+        context: architect
         name: build
         binary: resource-police
         filters:
