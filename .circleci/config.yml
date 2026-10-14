@@ -1,12 +1,13 @@
 version: 2.1
 
 orbs:
-  architect: giantswarm/architect@6.11.0
+  architect: giantswarm/architect@10.13.2
 
 workflows:
   build:
     jobs:
     - architect/go-build:
+        context: architect
         name: build
         binary: resource-police
         filters:
