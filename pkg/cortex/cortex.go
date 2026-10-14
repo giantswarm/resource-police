@@ -50,9 +50,8 @@ func New(conf Config) (*Service, error) {
 	apiConfig := api.Config{
 		Address: conf.URL,
 		RoundTripper: config.NewBasicAuthRoundTripper(
-			conf.UserName,
-			config.Secret(conf.Password),
-			"",
+			config.NewInlineSecret(conf.UserName),
+			config.NewInlineSecret(conf.Password),
 			api.DefaultRoundTripper),
 	}
 
@@ -94,7 +93,7 @@ func (s Service) QueryClusters() ([]Cluster, error) {
 		Step:  stepInterval,
 	}
 
-	value, warnings, err := v1api.QueryRange(context.Background(), query, queryRange)
+	value, warnings, _, err := v1api.QueryRange(context.Background(), query, queryRange)
 	if err != nil {
 		return clusters, microerror.Mask(err)
 	}
