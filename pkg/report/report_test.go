@@ -28,7 +28,6 @@ func Test_RenderReport(t *testing.T) {
 				{
 					Installation:         "foobar",
 					ID:                   "r72ux",
-					Release:              "14.5.6",
 					Provider:             "openstack",
 					FirstTimestamp:       time.Now().UTC().Add(-2 * time.Hour),
 					NamespaceDescription: "mynamespace1",
@@ -37,7 +36,6 @@ func Test_RenderReport(t *testing.T) {
 				{
 					Installation:         "gaia",
 					ID:                   "def34",
-					Release:              "1.2.3",
 					Provider:             "aws",
 					FirstTimestamp:       time.Now().UTC().Add(-4 * time.Hour),
 					NamespaceDescription: "mynamespace2",
@@ -46,7 +44,6 @@ func Test_RenderReport(t *testing.T) {
 				{
 					Installation:         "blah",
 					ID:                   "t2ayx",
-					Release:              "13.0.4",
 					Provider:             "azure",
 					FirstTimestamp:       time.Now().UTC().Add(-2 * 24 * time.Hour),
 					NamespaceDescription: "mynamespace3",
@@ -55,7 +52,6 @@ func Test_RenderReport(t *testing.T) {
 				{
 					Installation:         "ginger",
 					ID:                   "abc12",
-					Release:              "1.2.3-myversion",
 					Provider:             "aws",
 					FirstTimestamp:       time.Now().UTC().Add(-5 * 24 * time.Hour),
 					NamespaceDescription: "<unknown>",

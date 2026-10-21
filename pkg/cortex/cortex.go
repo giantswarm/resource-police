@@ -73,7 +73,6 @@ type Cluster struct {
 	Installation         string
 	NamespaceDescription string
 	ID                   string
-	Release              string
 	Provider             string
 	FirstTimestamp       time.Time
 }
@@ -117,7 +116,6 @@ func (s Service) QueryClusters() ([]Cluster, error) {
 		for i := 0; i < matrix.Len(); i++ {
 			installation := ""
 			clusterID := ""
-			release := ""
 			provider := ""
 			namespaceDescription := ""
 
@@ -139,24 +137,9 @@ func (s Service) QueryClusters() ([]Cluster, error) {
 				return clusters, microerror.Maskf(executionFailedError, "could not find required label 'provider' in sample")
 			}
 
-			// Vintage only: try to find release version.
-			if val, ok := matrix[i].Metric["release_version"]; ok {
-				release = string(val)
-			} else {
-				// AWS is the only vintage provider out there.
-				if provider == "aws" {
-					log.Printf("could not find required label 'release_version' in sample for cluster %s\n", clusterID)
-				}
-			}
-
-			if val, ok := matrix[i].Metric["exported_namespace"]; ok {
+			if val, ok := matrix[i].Metric["namespace"]; ok {
 				namespaceDescription = string(val)
 			} else {
-				// We only aggregate `exported_namespace` since CAPI clusters
-				if provider != "aws" {
-					log.Printf("could not find required label 'exported_namespace' in sample for cluster %q\n", clusterID)
-				}
-
 				namespaceDescription = "<unknown>"
 			}
 
@@ -174,7 +157,6 @@ func (s Service) QueryClusters() ([]Cluster, error) {
 				Installation:         installation,
 				NamespaceDescription: namespaceDescription,
 				ID:                   clusterID,
-				Release:              release,
 				Provider:             provider,
 				FirstTimestamp:       time.Unix(first/1000, 0),
 			}
