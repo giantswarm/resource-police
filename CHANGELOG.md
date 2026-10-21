@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Pull namespace description from `namespace` label instead of `exported_namespace`.
+
 ## [1.6.1] - 2026-10-14
 
 ### Removed
