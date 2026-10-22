@@ -3,7 +3,7 @@
     "type": "object",
     "properties": {
         "architecture": {
-            "type": "string",
+            "type": "string"
         },
         "cortexPassword": {
             "type": ["string", "null"]
