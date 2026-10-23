@@ -58,6 +58,13 @@ spec:
             runAsGroup: 1000
             seccompProfile:
               type: RuntimeDefault
-          serviceAccountName: {{ .Values.name }} 
+          nodeSelector:
+            kubernetes.io/arch: {{ .Values.architecture }}
+          serviceAccountName: {{ .Values.name }}
+          tolerations:
+          - key: kubernetes.io/arch
+            operator: Equal
+            value: {{ .Values.architecture }}
+            effect: NoSchedule
   schedule: "0 8,17 * * 1-5"
   successfulJobsHistoryLimit: 3

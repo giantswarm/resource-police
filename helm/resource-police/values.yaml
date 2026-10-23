@@ -1,5 +1,7 @@
 name: resource-police
 
+architecture: amd64
+
 userID: 1000
 groupID: 1000
 
