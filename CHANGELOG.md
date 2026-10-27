@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.7.0] - 2026-10-27
 
+### Added
+
+- Add `architecture` value for selecting the CPU architecture.
+
 ### Fixed
 
 - Fix ARM64 images.
